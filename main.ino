@@ -63,7 +63,7 @@ char data_buffer[80];
 
 // Output Formatting Variables
 String printOut;       // QUESTIONABLE
-const char *sep = ","; // QUESTIONABLE
+char *sep = ","; // QUESTIONABLE
 unsigned long timeStamp;
 
 // RED Led Pin
