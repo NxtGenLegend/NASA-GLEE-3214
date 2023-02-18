@@ -4,7 +4,25 @@ https://www.youtube.com/watch?v=zvgQ6exOklg
 
 https://github.com/GLEE2023/GLEE2023#Library-Descriptions
 
-Data Points To Be Added
+https://drive.google.com/drive/u/0/folders/10Ula5tRrOFotDJTbjy7J_5Lvk9pGOtq1
+
+Data Points:
+- Seismic Activity: Magnetometer & Accelerometer
+- Lunar Regolith Capacitance: Capacitive Sensor
+- Temperature: Thermopile & Temperature Sensor
+- Light Intensity (Experimental, Alternative: Voltage): Solar Panel
+- Radio Frequency Data Packets (Recheck): Radio Frequency Transceiver System
+
+Algorithms:
+- Gaussian Outlier Detection
+- Albedo (Potentially Implicit)
+- Energy Balance Equation
+- Fourier's Law Of Heat Conduction
+- I2C Bus Master & Slave Check
+- Wein's Displacement (Emissivity Corrections)
+- Maxwell's Equation For Permitivity (Experimental)
+- General Matrix & Array Averaging Algorithms
+- More To Add (Spike Detection (May Be Integrated With Gaussian Outlier Detection))
 
 Notes:
 Mid-Latitude for max sunlight
