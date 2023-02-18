@@ -6,6 +6,8 @@
 #include "TPIS1385.h"
 #include <Wire.h>
 
+// file name change to capital
+
 // For Reference
 // Standard V4 Lunasat I2C Sensors
 // AK09940 - Magnetometer
