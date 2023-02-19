@@ -24,6 +24,12 @@ Algorithms:
 - General Matrix & Array Averaging Algorithms
 - More To Add (Spike Detection (May Be Integrated With Gaussian Outlier Detection))
 
+Mission (Brief, Not Exact Wording, Just For Understanding Dataflow, Not RQ Wording, CS Wording):
+- Correlation Of Seismic Activity, Temperature, Solar Energy & Magnetic Field Changes With Capacitance
+- To Think About: Accelerometer Values & Polynomial Regression (May require regularization) / Mass Classification Relationships
+- Algorithms That May Be Used: Local Outlier Factor, Isolation Forest, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral - As opposed to Gaussian or in parallel
+- Matrices Required For Data Per Row: Determinant Calculations may be iminent as a means of representation- Sampling time sets can be introduced for square matrices (columns)
+
 Notes:
 Mid-Latitude for max sunlight
 Capacitive sensor In-Contact with regolith constantly
@@ -33,6 +39,9 @@ Few feet away / immediate sensor ranges for thermopile (and possibly IR)
 May have real-time data
 No external computing or sensors
 No program uploads post-launch
+
+
+
 Specific Sampling Approach - No need to make excessive assumptions
 
 Light, IR, Temperature, Albedo, Wein's Displacement and potentially Solar Flares favored with ML algorithms
