@@ -31,28 +31,22 @@ Mission (Brief, Not Exact Wording, Just For Understanding Dataflow, Not RQ Wordi
 - Matrices Required For Data Per Row: Determinant Calculations may be iminent as a means of representation- Sampling time sets can be introduced for square matrices (columns)
 
 Notes:
-Mid-Latitude for max sunlight
-Capacitive sensor In-Contact with regolith constantly
-Few feet away / immediate sensor ranges for thermopile (and possibly IR)
-100 m magnetic field generalization (Is of the LunaSat)
-1 Earth Week mission duration
-May have real-time data
-No external computing or sensors
-No program uploads post-launch
+- Mid-Latitude for max sunlight
+- Capacitive sensor In-Contact with regolith constantly
+- Few feet away / immediate sensor ranges for thermopile (and possibly IR)
+- 100 m magnetic field generalization (Is of the LunaSat)
+- 1 Earth Week mission duration
+- May have real-time data
+- No external computing or sensors
+- No program uploads post-launch
 
+General Pointers:
+- Specific Sampling Approach - No need to make excessive assumptions
+- Light, IR, Temperature, Albedo, Wein's Displacement and potentially Solar Flares favored with ML algorithms OR Lunar Regolith Sampling
+- KEEP IT SIMPLE - PROGRAMMATIC PROBLEM
 
-
-Specific Sampling Approach - No need to make excessive assumptions
-
-Light, IR, Temperature, Albedo, Wein's Displacement and potentially Solar Flares favored with ML algorithms
-OR
-Lunar Regolith Sampling
-
-KEEP IT SIMPLE - PROGRAMMATIC PROBLEM
-
-Possible Missions:
-Seismic Activity- Accelerometer, Magnetometer
-Lunar Surface Characterization (Regolith & Composition)- Capacitive Sensor, Magnetometer, Temperature Sensor, Thermopile, Solar Panel (Fourier's Law of Heat Conduction)
-
-Temperature Variations- Thermopile, Temperature Sensor
-Albedo (Light Intensity Profiling)- Solar Panel, Thermopile, Temperature Sensor (Energy Balance Equations & Emissivity)
+Previous Possible Missions:
+- Seismic Activity- Accelerometer, Magnetometer
+- Lunar Surface Characterization (Regolith & Composition)- Capacitive Sensor, Magnetometer, Temperature Sensor, Thermopile, Solar Panel (Fourier's Law of Heat Conduction)
+- Temperature Variations- Thermopile, Temperature Sensor
+- Albedo (Light Intensity Profiling)- Solar Panel, Thermopile, Temperature Sensor (Energy Balance Equations & Emissivity)
