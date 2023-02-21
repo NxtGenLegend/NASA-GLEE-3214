@@ -168,7 +168,7 @@ void setup()
 
 void loop()
 {
-    // Recheck Mode & Serial Connections
+    // Recheck Mode & Serial Connections (May Be Ladder For Sensor Test - Transmit / Receive)
     // Test Mode Setup
     if (Serial.available() > 0)
     {
@@ -281,6 +281,7 @@ void loop()
 
 // Test Mode Functions
 
+// Sensor Test Mode
 void sensor_test_mode()
 {
     // Get Samples + Data
@@ -306,6 +307,7 @@ void sensor_test_mode()
     delay(500);
 }
 
+// Receiver Mode
 void recieve_mode()
 {
     String output = Rad.receive_data_string();
@@ -319,6 +321,7 @@ void recieve_mode()
     Serial.println(Rad.getRSSI());
 }
 
+// Transmitter Mode
 void transmit_mode()
 {
     String msg = String("Msg from" + String(id));
