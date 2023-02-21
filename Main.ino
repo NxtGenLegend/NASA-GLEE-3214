@@ -1,5 +1,4 @@
 // Libraries
-
 #include <GLEE_Radio.h>
 #include "TMP117.h"
 #include "MLX90395.h"
@@ -40,7 +39,6 @@ int capSample;
 // I2C Configurations
 byte sensorsAddrs[4] = {0x0C, 0x48, 0x0D, 0x69};
 String sensorNames[4] = {"Mag", "Temp", "Therm", "Accelerometer"};
-
 byte addr;      // Byte representation of I2C addresses
 byte err;       // Byte to store error responses
 int numDevices; // Accumulator for tracking number of found devices
@@ -61,9 +59,7 @@ char magZ_str[7] = {' '};
 char thermObj_str[6] = {' '};
 char thermAmb_str[6] = {' '};
 char cap_str[5] = {' '};
-
-// Transmission Buffer
-char data_buffer[80];
+char data_buffer[80]; // Transmission Buffer
 
 // Output Formatting Variables
 String printOut; 
@@ -201,6 +197,7 @@ void loop()
         recieve_mode();
     }
 
+    // Need To Add Sensor & Radio Calibrations 
 
     /* Actual Sensor Setup (Recheck LunaSat Transmission Connections With Lander)
     // Save Timestamp
