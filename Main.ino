@@ -47,7 +47,7 @@ int numDevices; // Accumulator for tracking number of found devices
 
 // Radio Frequency Transmissions Setup
 int mode = 1; // Mentioned Below
-int id = 1;   // Only For LunaSat Testing
+int id = 1;   // Only For LunaSat Testing, 2 For Other LunaSat
 
 // Individual string buffers for memory optimization
 char timeStamp_str[8] = {' '};
@@ -66,8 +66,9 @@ char cap_str[5] = {' '};
 char data_buffer[80];
 
 // Output Formatting Variables
-String printOut; // QUESTIONABLE
-char *sep = ","; // QUESTIONABLE
+String printOut; 
+String printOut2;
+char *sep = ",";
 unsigned long timeStamp;
 
 // Just For Status Check
@@ -167,7 +168,41 @@ void setup()
 
 void loop()
 {
+    // Recheck Mode & Serial Connections
+    // Test Mode Setup
+    if (Serial.available() > 0)
+    {
+        byte input = Serial.read();
 
+        if (input == '1')
+        {
+            mode = 1;
+        }
+        else if (input == '2')
+        {
+            mode = 2;
+        }
+        else if (input == '3')
+        {
+            mode = 3;
+        }
+    }
+
+    if (mode == 1)
+    {
+        sensor_test_mode();
+    }
+    else if (mode == 2)
+    {
+        transmit_mode();
+    }
+    else if (mode == 3)
+    {
+        recieve_mode();
+    }
+
+
+    /* Actual Sensor Setup (Recheck LunaSat Transmission Connections With Lander)
     // Save Timestamp
     timeStamp = millis();
 
@@ -241,4 +276,60 @@ void loop()
 
     // Repeate every ~500ms INCREASE TO CHANGE SAMPLE RATE
     delay(500);
+    */
 }
+
+// Test Mode Functions
+
+void sensor_test_mode()
+{
+    // Get Samples + Data
+    timeStamp = millis();
+
+    tempSample = thermometer.getTemperatureC();
+    accSample = accelerometer.getSample();
+    magSample = magnetometer.getSample();
+    thermSample = thermopile.getSample();
+    capSample = capacitive.getRawData();
+
+    printOut = String(timeStamp) + " : TMP: " +
+               String(tempSample) + " : MPU: " +
+               String(accSample.x) + sep + String(accSample.y) + sep + String(accSample.z);
+    printOut2 = " MLX: " +
+                String(magSample.magnetic.x) + sep + String(magSample.magnetic.y) + sep + String(magSample.magnetic.z) + " : TPIS: " +
+                String(thermSample.object, 5) + sep + String(thermSample.ambient, 5) + " : CAP: " +
+                String(capSample);
+
+    Serial.print(printOut);
+    Serial.println(printOut2);
+
+    delay(500);
+}
+
+void recieve_mode()
+{
+    String output = Rad.receive_data_string();
+
+    // Output the results
+    Serial.print(F("Recieved: "));
+    Serial.println(output);
+
+    // Print recieved signal strength indicator
+    Serial.print(F("RSSI: "));
+    Serial.println(Rad.getRSSI());
+}
+
+void transmit_mode()
+{
+    String msg = String("Msg from" + String(id));
+
+    // Length (with one extra character for the null terminator)
+    int msg_len = msg.length() + 1;
+
+    // Prepare the character array (the buffer)
+    char buff[msg_len];
+
+    // Copy it over
+    msg.toCharArray(buff, msg_len);
+    Rad.transmit_data(buff);
+    delay(1000); // Send the transmission once every ~1 sec
