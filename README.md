@@ -23,12 +23,11 @@ Algorithms:
 - Maxwell's Equation For Permitivity (Experimental)
 - General Matrix & Array Averaging Algorithms
 - More To Add (Spike Detection (May Be Integrated With Gaussian Outlier Detection))
+- Algorithms That May Be Used: Derivative-Based Spike Detection Method, Local Outlier Factor, Isolation Forest, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral - As opposed to Gaussian or in parallel
 
 Mission (Brief, Not Exact Wording, Just For Understanding Dataflow, Not RQ Wording, CS Wording):
 - Correlation Of Seismic Activity, Temperature, Solar Energy & Magnetic Field Changes With Capacitance
 - To Think About: Accelerometer Values & Polynomial Regression (May require regularization) / Mass Classification Relationships
-- Algorithms That May Be Used: Local Outlier Factor, Isolation Forest, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral - As opposed to Gaussian or in parallel
-- Matrices Required For Data Per Row: Determinant Calculations may be iminent as a means of representation- Sampling time sets can be introduced for square matrices (columns)
 
 Notes:
 - Mid-Latitude for max sunlight
