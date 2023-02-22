@@ -2,7 +2,7 @@
  
 https://www.youtube.com/watch?v=zvgQ6exOklg
 
-https://github.com/GLEE2023/GLEE2023#Library-Descriptions
+https://github.com/GLEE2023/GLEE2023
 
 https://drive.google.com/drive/u/0/folders/10Ula5tRrOFotDJTbjy7J_5Lvk9pGOtq1
 
