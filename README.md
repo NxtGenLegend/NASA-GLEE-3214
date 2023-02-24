@@ -23,7 +23,7 @@ Algorithms:
 - Maxwell's Equation For Permitivity (Experimental)
 - General Matrix & Array Averaging Algorithms
 - More To Add (Spike Detection (May Be Integrated With Gaussian Outlier Detection))
-- Algorithms That May Be Used: Derivative-Based Spike Detection Method, Local Outlier Factor, Isolation Forest, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral - As opposed to Gaussian or in parallel
+- Algorithms That May Be Used: Derivative-Based Spike Detection Method, Local Outlier Factor, Isolation Forest, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral, Kalman Filter - As opposed to Gaussian or in parallel
 
 Mission (Brief, Not Exact Wording, Just For Understanding Dataflow, Not RQ Wording, CS Wording):
 - Correlation Of Seismic Activity, Temperature, Solar Energy & Magnetic Field Changes With Capacitance
@@ -46,6 +46,6 @@ General Pointers:
 
 Previous Possible Missions:
 - Seismic Activity- Accelerometer, Magnetometer
-- Lunar Surface Characterization (Regolith & Composition)- Capacitive Sensor, Magnetometer, Temperature Sensor, Thermopile, Solar Panel (Fourier's Law of Heat Conduction)
+- Lunar Surface Characterization (Regolith & Composition)- Capacitive Sensor, Magnetometer, Temperature Sensor, Thermopile, Solar Panel (Fourier's Law of Heat Conduction) further specifics: thermal conducitivity of lunar regolith, porosity measurements
 - Temperature Variations- Thermopile, Temperature Sensor
 - Albedo (Light Intensity Profiling)- Solar Panel, Thermopile, Temperature Sensor (Energy Balance Equations & Emissivity)
