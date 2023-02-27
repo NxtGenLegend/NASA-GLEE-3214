@@ -7,6 +7,12 @@
 #include "TPIS1385.h"
 #include <Wire.h>
 
+
+// Standard V4 Lunasat I2C Sensors
+//AK09940 - Magnetometer
+//TMP117 - Temperature Sensor
+//TPIS1385 - Thermopile
+//ICM20602 - Accelerometer
 //set up kalman sensor-wise (need to set variance values)
 SimpleKalmanFilter thermopile(6, 0.00001, 0.01);
 SimpleKalmanFilter temp_sensor (6,0.00001,0.01);
@@ -34,7 +40,7 @@ void loop() {
   float solar_panel_realvalue = analogRead(A0)/1024.0 * 100.0;
   
   // add a noise to the reference value and use as the measured value (inputted random noise for the time being)
-  float thermopile_measuredvalue = thermopile_realvalue + random(-100,100)/100.0;
+  float thermopile_measured_value = thermopile_realvalue + random(-100,100)/100.0;
   float temp_sensor_measuredvalue= temp_sensor_realvalue + random (-50,50)/100.0;
   float accelerometer_measuredvalue= accelerometer_realvalue + random (-40,40)/100.0;
   float magnetometer_measuredvalue= magnetometer_realvalue + random (-30,30)/100.0;
@@ -42,12 +48,12 @@ void loop() {
   float solar_panel_measuredvalue = solar_panel_realvalue + random (-30,30)/100.0;
 
   // calculate the estimated value with Kalman Filter
-  float thermopile_estimated_value = thermopile_realvalue.updateEstimate(thermopile_measured_value);
+  float thermopile_estimated_value = simpleKalmanFilter.updateEstimate(thermopile_measured_value);
   float temp_sensor_estimated_value= simpleKalmanFilter.updateEstimate(temp_sensor_measuredvalue);
   float accelerometer_estimated_value= simpleKalmanFilter.updateEstimate(accelerometer_measuredvalue);
   float magnetometer_estimated_value= simpleKalmanFilter.updateEstimate (magnetometer_measuredvalue);
   float cap_sensor_estimated_value = simpleKalmanFilter.updateEstimate (cap_sensor_measuredvalue);
-  float solar_panel_estimated_value = simpleKalmanFilter.updateEstimate (solar_panel_measuredvalue);
+  float solar_panel_estimated_value =simpleKalmanFilter.updateEstimate (solar_panel_measuredvalue);
 
   // send to Serial output every 100ms
   // use the Serial Plotter for a good visualization
