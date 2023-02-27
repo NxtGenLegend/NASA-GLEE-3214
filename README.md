@@ -49,3 +49,10 @@ Previous Possible Missions:
 - Lunar Surface Characterization (Regolith & Composition)- Capacitive Sensor, Magnetometer, Temperature Sensor, Thermopile, Solar Panel (Fourier's Law of Heat Conduction) further specifics: thermal conducitivity of lunar regolith, porosity measurements
 - Temperature Variations- Thermopile, Temperature Sensor
 - Albedo (Light Intensity Profiling)- Solar Panel, Thermopile, Temperature Sensor (Energy Balance Equations & Emissivity)
+
+For Reference
+Standard V4 Lunasat I2C Sensors
+AK09940 - Magnetometer
+TMP117 - Temperature Sensor
+TPIS1385 - Thermopile
+ICM20602 - Accelerometer

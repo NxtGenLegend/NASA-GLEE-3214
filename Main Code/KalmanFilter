@@ -1,0 +1,66 @@
+#include "SimpleKalmanFilter.h"
+#include "CAP.h"
+#include <GLEE_Radio.h>
+#include "TMP117.h"
+#include "MLX90395.h"
+#include "MPU6000.h"
+#include "TPIS1385.h"
+#include <Wire.h>
+
+//set up kalman sensor-wise (need to set variance values)
+SimpleKalmanFilter thermopile(6, 0.00001, 0.01);
+SimpleKalmanFilter temp_sensor (6,0.00001,0.01);
+SimpleKalmanFilter accelerometer (6, 6, 0.01);
+SimpleKalmanFilter magnetometer (6,6,0.01);
+SimpleKalmanFilter cap_sensor(6, 6, 0.01);
+SimpleKalmanFilter solar_panel (6,6,0.01);
+
+// Serial output refresh time
+const long SERIAL_REFRESH_TIME = 1000;
+long refresh_time;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // read a reference value from A0 and map it from 0 to 100 (need to replace with respective setups and reading mechanisms)
+  float thermopile_realvalue = analogRead(A0)/1024.0 * 100.0;
+  float temp_sensor_realvalue = analogRead(A0)/1024.0 * 100.0;
+  float accelerometer_realvalue = analogRead(A0)/1024.0 * 100.0;
+  float magnetometer_realvalue = analogRead(A0)/1024.0 * 100.0;
+  float cap_sensor_realvalue = analogRead(A0)/1024.0 * 100.0;
+  float solar_panel_realvalue = analogRead(A0)/1024.0 * 100.0;
+  
+  // add a noise to the reference value and use as the measured value (inputted random noise for the time being)
+  float thermopile_measured_value = thermopile_real_value + random(-100,100)/100.0;
+  float temp_sensor_measuredvalue= temp_sensor_real_value + random (-50,50)/100.0;
+  float accelerometer_measuredvalue= accelerometer_realvalue + random (-40,40)/100.0;
+  float magnetometer_measuredvalue= magnetometer_realvalue + random (-30,30)/100.0;
+  float cap_sensor_measuredvalue= cap_sensor_realvalue + random (-10,10)/100.0;
+  float solar_panel_measuredvalue = solar_panel_realvalue + random (-30,30)/100.0;
+
+  // calculate the estimated value with Kalman Filter
+  float thermopile_estimated_value = simpleKalmanFilter.updateEstimate(thermopile_measured_value);
+  float temp_sensor_estimated_value= simpleKalmanFilter.updateEstimate(temp_sensor_measuredvalue);
+  float accelerometer_estimated_value= simpleKalmanFilter.updateEstimate(accelerometer_measuredvalue);
+  float magnetometer_estimated_value= simpleKalmanFilter.updateEstimate (magnetometer_measuredvalue);
+  float cap_sensor_estimated_value = simpleKalmanFilter.updateEstimate (cap_sensor_measuredvalue);
+  float solar_panel_estimated_value =simpleKalmanFilter.updateEstimate (solar_panel_measuredvalue);
+
+  // send to Serial output every 100ms
+  // use the Serial Plotter for a good visualization
+  if (millis() > refresh_time) {
+    Serial.print(real_value,4);
+    Serial.print(",");
+    Serial.print(measured_value,4);
+    Serial.print(",");
+    Serial.print(estimated_value,4);
+    Serial.println();
+    
+    refresh_time = millis() + SERIAL_REFRESH_TIME;
+  }
+
+}
+
