@@ -1,4 +1,5 @@
 #include "SimpleKalmanFilter.h"
+#include <GLEE2023.h>
 #include "CAP.h"
 #include <GLEE_Radio.h>
 #include "TMP117.h"
@@ -13,13 +14,13 @@
 //TMP117 - Temperature Sensor
 //TPIS1385 - Thermopile
 //ICM20602 - Accelerometer
-//set up kalman sensor-wise (need to set variance values)
-SimpleKalmanFilter thermopile(6, 0.00001, 0.01);
-SimpleKalmanFilter temp_sensor (6,0.00001,0.01);
-SimpleKalmanFilter accelerometer (6, 6, 0.01);
-SimpleKalmanFilter magnetometer (6,6,0.01);
-SimpleKalmanFilter cap_sensor(6, 6, 0.01);
-SimpleKalmanFilter solar_panel (6,6,0.01);
+//sensor-wise measurement uncertainty, process noise
+SimpleKalmanFilter thermopile(6, 0.01); //edit
+SimpleKalmanFilter tempsensor (0.3,0.01); //edit
+SimpleKalmanFilter accelerometer (6, 0.01); //edit
+SimpleKalmanFilter magnetometer (6,0.01); //edit
+SimpleKalmanFilter capsensor(6,0.01); //edit
+SimpleKalmanFilter solarpanel (6, 0.01); //edit
 
 // Serial output refresh time
 const long SERIAL_REFRESH_TIME = 1000;
@@ -27,42 +28,95 @@ long refresh_time;
 
 void setup() {
   Serial.begin(9600);
+
+      // Sensor Initializations
+
+    // Temperature Sensor - TMP117 (Nothing)
+
+    // Accelerometer - MPU6000
+    accelerometer.begin(); // Begin (check connection)
+    accelerometer.initialize(); // Initialize (setup)
+    accelerometer.setAccelRange(MPU6000_RANGE_2_G); // Make sure acceleration range is set to 2G
+
+    // Magnetometer - MLX90393
+    magnetometer.begin_I2C();
+    // Set gain, resolution,OSR, and digital filter
+    magnetometer.setGain(8); //default value is 8, can range from 0-15
+    magnetometer.setResolution(MLX90395_RES_17,MLX90395_RES_17,MLX90395_RES_17);
+    magnetometer.setOSR(MLX90395_OSR_4); //not default. default is MLX90395_OSR_1 and is equivalent to 0
+    magnetometer.setFilter(MLX90395_FILTER_8); //default. MLX90395_FILTER_1 is equivalent to 0
+
+    // Capacitive Sensor CAP
+    capacitive.begin(); // Begin
+
+    // Thermopile - TPIS1385
+    thermopile.begin(); // Begin
+    thermopile.readEEprom(); // Check Registers
+
+    pinMode(LED1, OUTPUT);
+    pinMode(LED2, OUTPUT);
 }
 
 void loop() {
 
-  // read a reference value from A0 and map it from 0 to 100 (need to replace with respective setups and reading mechanisms)
-  float thermopile_realvalue = analogRead(A0)/1024.0 * 100.0;
-  float temp_sensor_realvalue = analogRead(A0)/1024.0 * 100.0;
-  float accelerometer_realvalue = analogRead(A0)/1024.0 * 100.0;
-  float magnetometer_realvalue = analogRead(A0)/1024.0 * 100.0;
-  float cap_sensor_realvalue = analogRead(A0)/1024.0 * 100.0;
-  float solar_panel_realvalue = analogRead(A0)/1024.0 * 100.0;
+  // read a reference value from A0 and map it from 0 to 100 (1024.0*100.0 needed?)
+  float thermopile_real_value = thermopile.getSample();
+  float tempsensor_real_value = thermometer.getTemperatureC();
+  float accelerometer_real_value = accelerometer.getSample();
+  float magnetometer_real_value = magnetometer.getSample ();
+  float capsensor_real_value = capacitive.getRawData();
+  float solarpanel_real_value = analogRead(A1)/1024.0*100.0;
   
-  // add a noise to the reference value and use as the measured value (inputted random noise for the time being)
-  float thermopile_measured_value = thermopile_realvalue + random(-100,100)/100.0;
-  float temp_sensor_measuredvalue= temp_sensor_realvalue + random (-50,50)/100.0;
-  float accelerometer_measuredvalue= accelerometer_realvalue + random (-40,40)/100.0;
-  float magnetometer_measuredvalue= magnetometer_realvalue + random (-30,30)/100.0;
-  float cap_sensor_measuredvalue= cap_sensor_realvalue + random (-10,10)/100.0;
-  float solar_panel_measuredvalue = solar_panel_realvalue + random (-30,30)/100.0;
 
   // calculate the estimated value with Kalman Filter
-  float thermopile_estimated_value = simpleKalmanFilter.updateEstimate(thermopile_measured_value);
-  float temp_sensor_estimated_value= simpleKalmanFilter.updateEstimate(temp_sensor_measuredvalue);
-  float accelerometer_estimated_value= simpleKalmanFilter.updateEstimate(accelerometer_measuredvalue);
-  float magnetometer_estimated_value= simpleKalmanFilter.updateEstimate (magnetometer_measuredvalue);
-  float cap_sensor_estimated_value = simpleKalmanFilter.updateEstimate (cap_sensor_measuredvalue);
-  float solar_panel_estimated_value =simpleKalmanFilter.updateEstimate (solar_panel_measuredvalue);
+  float thermopile_estimated_value = simpleKalmanFilter.updateEstimate (thermopile_real_value);
+  float tempsensor_estimated_value = simpleKalmanFilter.updateEstimate(tempsensor_real_value);
+  float accelerometer_estimated_value= simpleKalmanFilter.updateEstimate(accelerometer_real_value);
+  float magnetometer_estimated_value= simpleKalmanFilter.updateEstimate (magnetometer_real_value);
+  float capsensor_estimated_value = simpleKalmanFilter.updateEstimate (capsensor_real_value);
+  float solarpanel_estimated_value =simpleKalmanFilter.updateEstimate (solarpanel_real_value);
+
+  
 
   // send to Serial output every 100ms
   // use the Serial Plotter for a good visualization
   if (millis() > refresh_time) {
-    Serial.print(real_value,4);
+    //printing thermopile values
+    Serial.print(thermopile_real_value,4);
     Serial.print(",");
-    Serial.print(measured_value,4);
+    Serial.print(thermopile_measured_value,4);
     Serial.print(",");
-    Serial.print(estimated_value,4);
+    Serial.print(thermopile_estimated_value,4);
+    //printing temp sensor values
+    Serial.print(tempsensor_real_value,4);
+    Serial.print(",");
+    Serial.print(tempsensor_measured_value,4);
+    Serial.print(",");
+    Serial.print(tempsensor_estimated_value,4);
+    //printing accelerometer values
+    Serial.print(accelerometer_real_value,4);
+    Serial.print(",");
+    Serial.print(accelerometer_measured_value,4);
+    Serial.print(",");
+    Serial.print(accelerometer_estimated_value,4);
+    //printing magnetometer values
+    Serial.print(magnetometer_real_value,4);
+    Serial.print(",");
+    Serial.print(magnetometer_measured_value,4);
+    Serial.print(",");
+    Serial.print(magnetometer_estimated_value,4);
+    //printing capacitive sensor values
+    Serial.print(capsensor_real_value,4);
+    Serial.print(",");
+    Serial.print(capsensor_measured_value,4);
+    Serial.print(",");
+    Serial.print(capsensor_estimated_value,4);
+    //printing solar panel values
+    Serial.print(solarpanel_real_value,4);
+    Serial.print(",");
+    Serial.print(solarpanel_measured_value,4);
+    Serial.print(",");
+    Serial.print(solarpanel_estimated_value,4);
     Serial.println();
     
     refresh_time = millis() + SERIAL_REFRESH_TIME;
