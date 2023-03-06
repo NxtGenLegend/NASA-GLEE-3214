@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "kalmanfilter": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }
