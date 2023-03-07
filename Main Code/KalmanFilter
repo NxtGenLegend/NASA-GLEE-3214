@@ -1,5 +1,4 @@
 #include "SimpleKalmanFilter.h"
-#include <GLEE2023.h>
 #include "CAP.h"
 #include <GLEE_Radio.h>
 #include "TMP117.h"
@@ -7,11 +6,8 @@
 #include "MPU6000.h"
 #include "TPIS1385.h"
 #include <Wire.h>
-#include <Eigen.h>
-#include <ArduinoEigen.h> 
+#include <ArduinoEigen.h>
 #include "eigen.h"
-#include "ArduinoEigen.h"
-
 
 // Standard V4 Lunasat I2C Sensors
 //AK09940 - Magnetometer
