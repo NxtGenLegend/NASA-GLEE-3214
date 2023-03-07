@@ -7,6 +7,10 @@
 #include "MPU6000.h"
 #include "TPIS1385.h"
 #include <Wire.h>
+#include <Eigen.h>
+#include <ArduinoEigen.h> 
+#include "eigen.h"
+#include "ArduinoEigen.h"
 
 
 // Standard V4 Lunasat I2C Sensors
@@ -17,7 +21,7 @@
 //sensor-wise measurement uncertainty, process noise
 SimpleKalmanFilter thermopile(6, 0.01); //edit
 SimpleKalmanFilter tempsensor (0.3,0.01); //edit
-SimpleKalmanFilter accelerometer (6, 0.01); //edit
+SimpleKalmanFilter accelerometer (0.03, 0.01); //edit
 SimpleKalmanFilter magnetometer (6,0.01); //edit
 SimpleKalmanFilter capsensor(6,0.01); //edit
 SimpleKalmanFilter solarpanel (6, 0.01); //edit
@@ -84,37 +88,25 @@ void loop() {
     //printing thermopile values
     Serial.print(thermopile_real_value,4);
     Serial.print(",");
-    Serial.print(thermopile_measured_value,4);
-    Serial.print(",");
     Serial.print(thermopile_estimated_value,4);
     //printing temp sensor values
     Serial.print(tempsensor_real_value,4);
-    Serial.print(",");
-    Serial.print(tempsensor_measured_value,4);
     Serial.print(",");
     Serial.print(tempsensor_estimated_value,4);
     //printing accelerometer values
     Serial.print(accelerometer_real_value,4);
     Serial.print(",");
-    Serial.print(accelerometer_measured_value,4);
-    Serial.print(",");
     Serial.print(accelerometer_estimated_value,4);
     //printing magnetometer values
     Serial.print(magnetometer_real_value,4);
-    Serial.print(",");
-    Serial.print(magnetometer_measured_value,4);
     Serial.print(",");
     Serial.print(magnetometer_estimated_value,4);
     //printing capacitive sensor values
     Serial.print(capsensor_real_value,4);
     Serial.print(",");
-    Serial.print(capsensor_measured_value,4);
-    Serial.print(",");
     Serial.print(capsensor_estimated_value,4);
     //printing solar panel values
     Serial.print(solarpanel_real_value,4);
-    Serial.print(",");
-    Serial.print(solarpanel_measured_value,4);
     Serial.print(",");
     Serial.print(solarpanel_estimated_value,4);
     Serial.println();
