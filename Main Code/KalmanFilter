@@ -15,6 +15,11 @@
 //TPIS1385 - Thermopile
 //ICM20602 - Accelerometer
 //sensor-wise measurement uncertainty, process noise
+
+// SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition, 
+// Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition, 
+// Subsequent Calibration & Testing
+
 SimpleKalmanFilter thermopile(6, 0.01); //edit
 SimpleKalmanFilter tempsensor (0.3,0.01); //edit
 SimpleKalmanFilter accelerometer (0.03, 0.01); //edit
@@ -74,7 +79,7 @@ void loop() {
   float accelerometer_estimated_value= accelerometer.updateEstimate(accelerometer_real_value);
   float magnetometer_estimated_value= magnetometer.updateEstimate (magnetometer_real_value);
   float capsensor_estimated_value = capsensor.updateEstimate (capsensor_real_value);
-  float solarpanel_estimated_value =solarpanel.updateEstimate (solarpanel_real_value);
+  float solarpanel_estimated_value = solarpanel.updateEstimate (solarpanel_real_value);
 
   
 
