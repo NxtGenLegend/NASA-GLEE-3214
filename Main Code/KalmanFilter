@@ -69,12 +69,12 @@ void loop() {
   
 
   // calculate the estimated value with Kalman Filter
-  float thermopile_estimated_value = simpleKalmanFilter.updateEstimate (thermopile_real_value);
-  float tempsensor_estimated_value = simpleKalmanFilter.updateEstimate(tempsensor_real_value);
-  float accelerometer_estimated_value= simpleKalmanFilter.updateEstimate(accelerometer_real_value);
-  float magnetometer_estimated_value= simpleKalmanFilter.updateEstimate (magnetometer_real_value);
-  float capsensor_estimated_value = simpleKalmanFilter.updateEstimate (capsensor_real_value);
-  float solarpanel_estimated_value =simpleKalmanFilter.updateEstimate (solarpanel_real_value);
+  float thermopile_estimated_value = thermopile.updateEstimate (thermopile_real_value);
+  float tempsensor_estimated_value = tempsensor.updateEstimate(tempsensor_real_value);
+  float accelerometer_estimated_value= accelerometer.updateEstimate(accelerometer_real_value);
+  float magnetometer_estimated_value= magnetometer.updateEstimate (magnetometer_real_value);
+  float capsensor_estimated_value = capsensor.updateEstimate (capsensor_real_value);
+  float solarpanel_estimated_value =solarpanel.updateEstimate (solarpanel_real_value);
 
   
 
