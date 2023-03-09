@@ -16,9 +16,21 @@
 //ICM20602 - Accelerometer
 //sensor-wise measurement uncertainty, process noise
 
-// SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition, 
+// SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition, I2C Setup
 // Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition, 
 // Subsequent Calibration & Testing
+
+TMP117 thermometer(1);
+MPU6000 accelerometer(2);
+MLX90395 magnetometer(3);
+TPIS1385 thermopile(4);
+CAP capacitive(5);
+
+float tempSample;
+sensor_float_vec_t accSample;
+mlx_sample_t magSample;
+TPsample_t thermSample;
+int capSample;
 
 SimpleKalmanFilter thermopile(6, 0.01); //edit
 SimpleKalmanFilter tempsensor (0.3,0.01); //edit
@@ -34,32 +46,36 @@ long refresh_time;
 void setup() {
   Serial.begin(9600);
 
-      // Sensor Initializations
+  Wire.begin();          // Begin Serial Communications
+  Wire.setClock(100000); // Set Standard 100Mhz i2c speed
+  Serial.begin(9600);    // Set Default
 
-    // Temperature Sensor - TMP117 (Nothing)
+  // Sensor Initializations
 
-    // Accelerometer - MPU6000
-    accelerometer.begin(); // Begin (check connection)
-    accelerometer.initialize(); // Initialize (setup)
-    accelerometer.setAccelRange(MPU6000_RANGE_2_G); // Make sure acceleration range is set to 2G
+  // Temperature Sensor - TMP117 (Nothing)
 
-    // Magnetometer - MLX90393
-    magnetometer.begin_I2C();
-    // Set gain, resolution,OSR, and digital filter
-    magnetometer.setGain(8); //default value is 8, can range from 0-15
-    magnetometer.setResolution(MLX90395_RES_17,MLX90395_RES_17,MLX90395_RES_17);
-    magnetometer.setOSR(MLX90395_OSR_4); //not default. default is MLX90395_OSR_1 and is equivalent to 0
-    magnetometer.setFilter(MLX90395_FILTER_8); //default. MLX90395_FILTER_1 is equivalent to 0
+  // Accelerometer - MPU6000
+  accelerometer.begin();                          // Begin (check connection)
+  accelerometer.initialize();                     // Initialize (setup)
+  accelerometer.setAccelRange(MPU6000_RANGE_2_G); // Make sure acceleration range is set to 2G
 
-    // Capacitive Sensor CAP
-    capacitive.begin(); // Begin
+  // Magnetometer - MLX90393
+  magnetometer.begin_I2C();
+  // Set gain, resolution,OSR, and digital filter
+  magnetometer.setGain(8); // default value is 8, can range from 0-15
+  magnetometer.setResolution(MLX90395_RES_17, MLX90395_RES_17, MLX90395_RES_17);
+  magnetometer.setOSR(MLX90395_OSR_4);       // not default. default is MLX90395_OSR_1 and is equivalent to 0
+  magnetometer.setFilter(MLX90395_FILTER_8); // default. MLX90395_FILTER_1 is equivalent to 0
 
-    // Thermopile - TPIS1385
-    thermopile.begin(); // Begin
-    thermopile.readEEprom(); // Check Registers
+  // Capacitive Sensor CAP
+  capacitive.begin(); // Begin
 
-    pinMode(LED1, OUTPUT);
-    pinMode(LED2, OUTPUT);
+  // Thermopile - TPIS1385
+  thermopile.begin();      // Begin
+  thermopile.readEEprom(); // Check Registers
+
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
 }
 
 void loop() {
