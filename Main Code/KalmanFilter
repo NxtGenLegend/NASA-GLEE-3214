@@ -9,13 +9,6 @@
 #include <ArduinoEigen.h>
 #include "eigen.h"
 
-// Standard V4 Lunasat I2C Sensors
-//AK09940 - Magnetometer
-//TMP117 - Temperature Sensor
-//TPIS1385 - Thermopile
-//ICM20602 - Accelerometer
-//sensor-wise measurement uncertainty, process noise
-
 // SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition, I2C Setup
 // Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition, 
 // Subsequent Calibration & Testing
@@ -31,25 +24,16 @@ sensor_float_vec_t accSample;
 mlx_sample_t magSample;
 TPsample_t thermSample;
 int capSample;
+float solarVoltageValue;
 
-SimpleKalmanFilter thermopile(6, 0.01); //edit
-SimpleKalmanFilter tempsensor (0.3,0.01); //edit
-SimpleKalmanFilter accelerometer (0.03, 0.01); //edit
-SimpleKalmanFilter magnetometer (6,0.01); //edit
-SimpleKalmanFilter capsensor(6,0.01); //edit
-SimpleKalmanFilter solarpanel (6, 0.01); //edit
-
-// Serial output refresh time
-const long SERIAL_REFRESH_TIME = 1000;
-long refresh_time;
+SimpleKalmanFilter ThermoKf(1, 1, 1);    // tune
+SimpleKalmanFilter TempKf(1, 1, 1);    // tune
+SimpleKalmanFilter AccKf(1, 1, 1); // tune
+SimpleKalmanFilter MagKf(1, 1, 1);  // tune
+SimpleKalmanFilter CapKf(1, 1, 1);     // tune
+SimpleKalmanFilter SolarKf(1, 1, 1);    // tune
 
 void setup() {
-  Serial.begin(9600);
-
-  Wire.begin();          // Begin Serial Communications
-  Wire.setClock(100000); // Set Standard 100Mhz i2c speed
-  Serial.begin(9600);    // Set Default
-
   // Sensor Initializations
 
   // Temperature Sensor - TMP117 (Nothing)
@@ -61,7 +45,6 @@ void setup() {
 
   // Magnetometer - MLX90393
   magnetometer.begin_I2C();
-  // Set gain, resolution,OSR, and digital filter
   magnetometer.setGain(8); // default value is 8, can range from 0-15
   magnetometer.setResolution(MLX90395_RES_17, MLX90395_RES_17, MLX90395_RES_17);
   magnetometer.setOSR(MLX90395_OSR_4);       // not default. default is MLX90395_OSR_1 and is equivalent to 0
@@ -73,63 +56,34 @@ void setup() {
   // Thermopile - TPIS1385
   thermopile.begin();      // Begin
   thermopile.readEEprom(); // Check Registers
-
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
 }
 
 void loop() {
-
-  // read a reference value from A0 and map it from 0 to 100 (1024.0*100.0 needed?)
-  float thermopile_real_value = thermopile.getSample();
-  float tempsensor_real_value = thermometer.getTemperatureC();
-  float accelerometer_real_value = accelerometer.getSample();
-  float magnetometer_real_value = magnetometer.getSample ();
-  float capsensor_real_value = capacitive.getRawData();
-  float solarpanel_real_value = analogRead(A1)/1024.0*100.0;
-  
+  tempSample = thermometer.getTemperatureC();
+  accSample = accelerometer.getSample();
+  magSample = magnetometer.getSample();
+  thermSample = thermopile.getSample();
+  capSample = capacitive.getRawData();
+  solarVoltageValue = analogRead(A1) / 1024.0 * 100.0;
 
   // calculate the estimated value with Kalman Filter
-  float thermopile_estimated_value = thermopile.updateEstimate (thermopile_real_value);
-  float tempsensor_estimated_value = tempsensor.updateEstimate(tempsensor_real_value);
-  float accelerometer_estimated_value= accelerometer.updateEstimate(accelerometer_real_value);
-  float magnetometer_estimated_value= magnetometer.updateEstimate (magnetometer_real_value);
-  float capsensor_estimated_value = capsensor.updateEstimate (capsensor_real_value);
-  float solarpanel_estimated_value = solarpanel.updateEstimate (solarpanel_real_value);
-
-  
-
-  // send to Serial output every 100ms
-  // use the Serial Plotter for a good visualization
-  if (millis() > refresh_time) {
-    //printing thermopile values
-    Serial.print(thermopile_real_value,4);
-    Serial.print(",");
-    Serial.print(thermopile_estimated_value,4);
-    //printing temp sensor values
-    Serial.print(tempsensor_real_value,4);
-    Serial.print(",");
-    Serial.print(tempsensor_estimated_value,4);
-    //printing accelerometer values
-    Serial.print(accelerometer_real_value,4);
-    Serial.print(",");
-    Serial.print(accelerometer_estimated_value,4);
-    //printing magnetometer values
-    Serial.print(magnetometer_real_value,4);
-    Serial.print(",");
-    Serial.print(magnetometer_estimated_value,4);
-    //printing capacitive sensor values
-    Serial.print(capsensor_real_value,4);
-    Serial.print(",");
-    Serial.print(capsensor_estimated_value,4);
-    //printing solar panel values
-    Serial.print(solarpanel_real_value,4);
-    Serial.print(",");
-    Serial.print(solarpanel_estimated_value,4);
-    Serial.println();
-    
-    refresh_time = millis() + SERIAL_REFRESH_TIME;
-  }
+  //float thermopile_estimated_value = ThermoKf.updateEstimate (thermSample); // Datatype Conversion Required
+  float tempsensor_estimated_value = TempKf.updateEstimate(tempSample);
+  //float accelerometer_estimated_value = AccKf.updateEstimate(accSample); // Datatype Conversion Required
+  //float magnetometer_estimated_value = MagKf.updateEstimate(magSample);  // Datatype Conversion Required
+  float capsensor_estimated_value = CapKf.updateEstimate (capSample);
+  float solarpanel_estimated_value = SolarKf.updateEstimate (solarVoltageValue);
 
 }
 
+/*Algorithm For Implementation: (_err_estimate, = _err_measure, _q)
+float SimpleKalmanFilter::updateEstimate(float mea)
+{
+  _kalman_gain = _err_estimate/(_err_estimate + _err_measure);
+  _current_estimate = _last_estimate + _kalman_gain * (mea - _last_estimate);
+  _err_estimate =  (1.0f - _kalman_gain)*_err_estimate + fabsf(_last_estimate-_current_estimate)*_q;
+  _last_estimate=_current_estimate;
+
+  return _current_estimate;
+}
+*/
