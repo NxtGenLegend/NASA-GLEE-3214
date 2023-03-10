@@ -26,12 +26,12 @@ TPsample_t thermSample;
 int capSample;
 float solarVoltageValue;
 
-SimpleKalmanFilter ThermoKf(1, 1, 1);    // tune
-SimpleKalmanFilter TempKf(1, 1, 1);    // tune
+SimpleKalmanFilter ThermoKf(1, 1, 1); // tune
+SimpleKalmanFilter TempKf(1, 1, 1); // tune
 SimpleKalmanFilter AccKf(1, 1, 1); // tune
-SimpleKalmanFilter MagKf(1, 1, 1);  // tune
-SimpleKalmanFilter CapKf(1, 1, 1);     // tune
-SimpleKalmanFilter SolarKf(1, 1, 1);    // tune
+SimpleKalmanFilter MagKf(1, 1, 1); // tune
+SimpleKalmanFilter CapKf(1, 1, 1); // tune
+SimpleKalmanFilter SolarKf(1, 1, 1); // tune
 
 void setup() {
   // Sensor Initializations
