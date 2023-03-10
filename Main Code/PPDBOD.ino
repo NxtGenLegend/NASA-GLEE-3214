@@ -40,7 +40,7 @@ void setup()
         if (data_prime[i+1]-data_prime[i]>(mean+(3*stdDev)))
         {
             dir++;
-            Serial.println(data[i+1]);
+            Serial.println(data[i+2]);
             Serial.println("OUTLIER");
         }
         else if (data_prime[i+1]-data_prime[i]<(mean-(3*stdDev)))
