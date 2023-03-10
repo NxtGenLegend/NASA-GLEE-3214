@@ -9,7 +9,7 @@ float data_prime[255];
 float dir = 0;
 float tolerance = 7; //HYPERPARAM
 
-// Mean that you are comparing difference of datapoints with is mean of datapoints, not mean of difference between datapoints, it will always be outside of 3SDs
+// Require distance from mean to be similar as well
 
 void setup()
 {
