@@ -5,6 +5,7 @@
 
 // Instantiate TMP117 class with id of one and debugging set to false
 float data[256];
+float data_prime[255];
 float dir = 0;
 float tolerance = 7; //HYPERPARAM
 
@@ -14,32 +15,39 @@ void setup()
 {
     Serial.begin(9600);
 
-    float sum=0;
-    for (int i=0; i<256; i++)
+    for (int i=0; i<255; i++)
     {
-        sum+=data[i];
+        data_prime[i] = data[i+1]-data[i];
     }
 
-    float mean = sum/256;
+    float sum=0;
+    for (int i=0; i<255; i++)
+    {
+        sum+=data_prime[i];
+    }
+
+    float mean = sum/255;
     sum=0;
 
-    for (int i=0; i<256; i++)
+    for (int i=0; i<255; i++)
     {
-        sum += pow(data[i]-mean,2);
+        sum += pow(data_prime[i]-mean,2);
     }
-    float stdDev = sqrt(sum/256);
+    float stdDev = sqrt(sum/255);
 
-    for (int i=0; i<256-1; i++)
+    for (int i=0; i<255; i++)
     {
-        if (data[i+1]-data[i]>(mean+(3*stdDev)))
+        if (data_prime[i]>(mean+(3*stdDev)))
         {
             dir++;
             Serial.println(data[i+1]);
+            Serial.println("OUTLIER");
         }
-        else if (data[i+1]-data[i]<(mean-(3*stdDev)))
+        else if (data_prime[i]<(mean-(3*stdDev)))
         {
             dir--;
             Serial.println(data[i+1]);
+            Serial.println("OUTLIER");
         }
         else
         {dir=0;}
