@@ -6,6 +6,8 @@ https://github.com/GLEE2023/GLEE2023
 
 https://drive.google.com/drive/u/0/folders/10Ula5tRrOFotDJTbjy7J_5Lvk9pGOtq1
 
+https://github.com/mitbailey/luna 
+
 Data Points:
 - Seismic Activity: Magnetometer & Accelerometer
 - Lunar Regolith Capacitance: Capacitive Sensor
@@ -20,10 +22,11 @@ Algorithms:
 - Fourier's Law Of Heat Conduction
 - I2C Bus Master & Slave Check
 - Wein's Displacement (Emissivity Corrections)
-- Maxwell's Equation For Permitivity (Experimental)
+- Maxwell's Equation For Permittivity (Experimental)
 - General Matrix & Array Averaging Algorithms
 - More To Add (Spike Detection (May Be Integrated With Gaussian Outlier Detection))
-- Algorithms That May Be Used: Derivative-Based Spike Detection Method, Local Outlier Factor, Isolation Forest, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral, Kalman Filter - As opposed to Gaussian or in parallel
+- Algorithms That May Be Used: Derivative-Based Spike Detection Method, Local Outlier Factor, Minimum Covariance Determinant, One-Class SVM and/or Local Correlation Integral, Kalman Filter - As opposed to Gaussian or in parallel 
+-Library independent implementations: Minimum covariance determinant, Kalman Filter, derivative-based 
 
 Mission (Brief, Not Exact Wording, Just For Understanding Dataflow, Not RQ Wording, CS Wording):
 - Correlation Of Seismic Activity, Temperature, Solar Energy & Magnetic Field Changes With Capacitance
