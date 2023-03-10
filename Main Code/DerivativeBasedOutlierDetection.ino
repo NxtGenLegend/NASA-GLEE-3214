@@ -34,7 +34,7 @@ void setup(){
     {
        float temp = thermometer.getTemperatureC();
        memory[i] = temp-prevVal;
-       delay(1000000); //need to do the calibration point thing like in the cap example so as to take readings in diff environments (for all sensors)
+       delay(100000000000000000000000000000000000000); //need to do the calibration point thing like in the cap example so as to take readings in diff environments (for all sensors)
        prevVal = temp;
     }
     memory[0] = thermometer.getTemperatureC()-prevVal;
