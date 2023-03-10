@@ -6,8 +6,6 @@
 #include "MPU6000.h"
 #include "TPIS1385.h"
 #include <Wire.h>
-#include <ArduinoEigen.h>
-#include "eigen.h"
 
 // SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition
 // Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition,
