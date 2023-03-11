@@ -72,6 +72,7 @@ void loop() {
 }
 
 
-float calculateMode(float arr[], int size) {
+float calculateMode(float arr[], int size)  {
   float modeValue = 0.0;
-  int maxCount = 0
+  int maxCount = 0;
+}
