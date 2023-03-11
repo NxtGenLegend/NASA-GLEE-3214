@@ -55,7 +55,7 @@ void setup(){
     }
 
     stdDev = sqrt(sum/short_term_memory);
-};
+}
 
 void loop(){
     // Record start time for letter offseting of delay to make the loop run once per second
@@ -97,4 +97,4 @@ void loop(){
 
     // Delay each loop by the sample rate off set by the time it took to get the temperature
     delay(timeBetweenSample - (endTime - startTime));
-};
+}
