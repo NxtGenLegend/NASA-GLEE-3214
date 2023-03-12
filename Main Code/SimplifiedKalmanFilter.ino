@@ -7,6 +7,7 @@
 #include "TPIS1385.h"
 #include <Wire.h>
 
+// SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition
 // Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition,
 // Subsequent Calibration & Testing
 
@@ -31,10 +32,13 @@ float MU[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 float lastEstimate[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 float currentEstimate[11];
 float proVar[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-float rms [6];
-float finalcurrentEst[11];
 
-
+// SimpleKalmanFilter ThermoKf(1, 1, 1); // tune
+// SimpleKalmanFilter TempKf(1, 1, 1);   // tune
+// SimpleKalmanFilter AccKf(1, 1, 1);    // tune
+// SimpleKalmanFilter MagKf(1, 1, 1);    // tune
+// SimpleKalmanFilter CapKf(1, 1, 1);    // tune
+// SimpleKalmanFilter SolarKf(1, 1, 1);  // tune
 
 void setup()
 {
@@ -81,6 +85,7 @@ void loop()
                           magSample.magnetic.y,
                           magSample.magnetic.z,
                           capSample,
+<<<<<<< Updated upstream
                           solarVoltageValue }; 
 
     float RMS [11] = {sqrt(pow(accSample.x, 2)), //add multiple xs and divide by n
@@ -94,29 +99,43 @@ void loop()
                       sqrt(pow(tempSample, 2)),
                       sqrt(pow(capSample, 2)),
                       sqrt(pow(solarVoltageValue, 2)) };
+=======
+                          solarVoltageValue }; // Multiple dimensions required
 
-    
-  
-    // Simple Kalman Filter 
-    
+    // FOR LOOP to make Samples -> RMS
+>>>>>>> Stashed changes
+
+    // Simplified Kalman Filter
     for (int i = 0; i < 11; i++)
     {
-       KalmanG[i] = EU[i] / (EU[i] + MU[i]);
-        currentEstimate[i] = lastEstimate[i] + KalmanG[i] * (RMS[i] - lastEstimate[i]);
-        EU[i] = (1.0f - KalmanG[i]) * EU[i] + fabsf(lastEstimate[i] - currentEstimate[i]) * proVar[i];
-        lastEstimate[i] = currentEstimate[i];
-    }
-    //create global array for current estimate values (instead of return currentEstimate function)
-        for (int i = 0; i < 11; i++) {
-        finalcurrentEst[i] = currentEstimate[i];
+      KalmanG[i] = EU[i] / (EU[i]  + MU[i]);
+      currentEstimate[i] = lastEstimate[i] + KalmanG[i] * (Samples[i] - lastEstimate[i]);
+      EU[i] = (1.0f - KalmanG[i]) * EU[i] + fabsf(lastEstimate[i] - currentEstimate[i]) * proVar[i];
+      lastEstimate[i] = currentEstimate[i];
     }
 
+<<<<<<< Updated upstream
 
     Serial.println("Filtered values: ");
-
-    for (int i = 0; i < 11; i++) {
-        Serial.print(finalcurrentEst[i]);
-        Serial.print(" ");
-    }
-    
+=======
+    // calculate the estimated value with Kalman Filter
+    // float thermopile_estimated_value = ThermoKf.updateEstimate (thermSample); // Datatype Conversion Required
+    //float tempsensor_estimated_value = TempKf.updateEstimate(tempSample);
+    // float accelerometer_estimated_value = AccKf.updateEstimate(accSample); // Datatype Conversion Required
+    // float magnetometer_estimated_value = MagKf.updateEstimate(magSample);  // Datatype Conversion Required
+    //float capsensor_estimated_value = CapKf.updateEstimate(capSample);
+    //float solarpanel_estimated_value = SolarKf.updateEstimate(solarVoltageValue);
 }
+>>>>>>> Stashed changes
+
+/*Algorithm For Implementation: (_err_estimate, = _err_measure, _q)
+float SimpleKalmanFilter::updateEstimate(float mea)
+{
+  _kalman_gain = _err_estimate/(_err_estimate + _err_measure);
+  _current_estimate = _last_estimate + _kalman_gain * (mea - _last_estimate);
+  _err_estimate =  (1.0f - _kalman_gain)*_err_estimate + fabsf(_last_estimate-_current_estimate)*_q;
+  _last_estimate=_current_estimate;
+
+  return _current_estimate;
+}
+*/

@@ -1,3 +1,4 @@
+#include "SimpleKalmanFilter.h"
 #include "CAP.h"
 #include <GLEE_Radio.h>
 #include "TMP117.h"
@@ -6,22 +7,8 @@
 #include "TPIS1385.h"
 #include <Wire.h>
 
-// Standard V4 Lunasat I2C Sensors
-//AK09940 - Magnetometer
-//TMP117 - Temperature Sensor
-//TPIS1385 - Thermopile
-//ICM20602 - Accelerometer
-//sensor-wise measurement uncertainty, process noise
-
-// I2C Setup
-// Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition, 
+// Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition,
 // Subsequent Calibration & Testing
-
-//flow of code: defining initial state+state covariance+noise covariance+measurement covariance, kalman gains,
-//collecting sensor data, q process noise covariance, r , predict and update to output noise-accounted vs original values
-
-//NOTE: VALUES NEED TO BE TUNED!!!
-//ALSO NOTE: I don't like the thermometer / temp sensor inconsistency, need to fix 
 
 TMP117 thermometer(1);
 MPU6000 accelerometer(2);
@@ -29,63 +16,26 @@ MLX90395 magnetometer(3);
 TPIS1385 thermopile(4);
 CAP capacitive(5);
 
+TPsample_t thermoSample; // 2
 float tempSample;
-sensor_float_vec_t accSample;
-mlx_sample_t magSample;
-TPsample_t thermSample;
-int capSample;
+sensor_float_vec_t accSample; // 3
+mlx_sample_t magSample;       // 3
+float capSample;
+float solarVoltageValue;
 
-// Initial state est. (taken as 0 assuming equilibrium, need to tune)
-float thermometer_init=0;
-float accelerometer_init =0;
-float magnetometer_init = 0;
-float thermopile_init = 0;
-float capacitive_init= 0;
-float solarpanel_init=0;
+// Thermopile Object, Thermopile Ambient, Temperature, Acceleration X, Acceleration Y, Acceleration Z,
+// Magnetometer X, Magnetometer Y, Magnetometer Z, Capacitive, Solar
+float KalmanG[11];
+float EU[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+float MU[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+float lastEstimate[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+float currentEstimate[11];
+float proVar[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+float rms[6];
+float finalcurrentEst[11];
 
-//initial state covariances (p)
-float p_thermometer=0.1;
-float p_accelerometer =0.1;
-float p_magnetometer = 0.1;
-float p_thermopile = 0.1;
-float p_capacitive = 0.1;
-float p_solarpanel=0.1;
-
-//Process noise covariance (q)
-float q_thermometer=0.1;
-float q_accelerometer =0.1;
-float q_magnetometer = 0.1;
-float q_thermopile = 0.1;
-float q_capacitive = 0.1;
-float q_solarpanel=0.1;
-
-// Measurement noise covariances (r) //no tuning required, only if necessary, just rechecking w sensor datasheets 
-float r_thermometer=0.1;
-float r_accelerometer =0.1;
-float r_magnetometer = 0.1;
-float r_thermopile = 0.1;
-float r_capacitive = 0.1;
-float r_solarpanel=0.1;
-
-// Kalman gain (k)
-float k_thermometer;
-float k_accelerometer;
-float k_magnetometer;
-float k_thermopile;
-float k_capacitive;
-float k_solarpanel;
-
-// Serial output refresh time
-const long SERIAL_REFRESH_TIME = 1000;
-long refresh_time;
-
-void setup() {
-  Serial.begin(9600);
-
-  Wire.begin();          // Begin Serial Communications
-  Wire.setClock(100000); // Set Standard 100Mhz i2c speed
-  Serial.begin(9600);    // Set Default
-
+void setup()
+{
   // Sensor Initializations
 
   // Temperature Sensor - TMP117 (Nothing)
@@ -97,7 +47,6 @@ void setup() {
 
   // Magnetometer - MLX90393
   magnetometer.begin_I2C();
-  // Set gain, resolution,OSR, and digital filter
   magnetometer.setGain(8); // default value is 8, can range from 0-15
   magnetometer.setResolution(MLX90395_RES_17, MLX90395_RES_17, MLX90395_RES_17);
   magnetometer.setOSR(MLX90395_OSR_4);       // not default. default is MLX90395_OSR_1 and is equivalent to 0
@@ -109,46 +58,67 @@ void setup() {
   // Thermopile - TPIS1385
   thermopile.begin();      // Begin
   thermopile.readEEprom(); // Check Registers
-
 }
 
-void loop () {
+void loop()
+{
+  thermoSample = thermopile.getSample();
+  tempSample = thermometer.getTemperatureC();
+  accSample = accelerometer.getSample();
+  magSample = magnetometer.getSample();
+  capSample = capacitive.getRawData();
+  solarVoltageValue = analogRead(A1) / 1024.0 * 100.0;
 
-  // read sensor values 
-    float thermopile_real_value = thermopile.getSample();
-    float tempsensor_real_value = thermometer.getTemperatureC();
-    float accelerometer_real_value = accelerometer.getSample();
-    float magnetometer_real_value = magnetometer.getSample ();
-    float capsensor_real_value = capacitive.getRawData();
-    float solarpanel_real_value = analogRead(A1)/1024.0*100.0;
+  float Samples[11] = {thermoSample.object,
+                       thermoSample.ambient,
+                       tempSample,
+                       accSample.x,
+                       accSample.y,
+                       accSample.z,
+                       magSample.magnetic.x,
+                       magSample.magnetic.y,
+                       magSample.magnetic.z,
+                       capSample,
+                       solarVoltageValue}; // Multiple dimensions?
 
-//note: 2 options for flow of data, sensor-wise updating or operation-wise filtering, I've done the latter as of rn
+  float RMS[11] = {sqrt(pow(accSample.x, 2)),
+                   sqrt(pow(accSample.y, 2)),
+                   sqrt(pow(accSample.z, 2)),
+                   sqrt(pow(magSample.magnetic.x, 2)),
+                   sqrt(pow(magSample.magnetic.y, 2)),
+                   sqrt(pow(magSample.magnetic.z, 2)),
+                   sqrt(pow(thermoSample.object, 2)),
+                   sqrt(pow(thermoSample.ambient, 2)),
+                   sqrt(pow(tempSample, 2)),
+                   sqrt(pow(capSample, 2)),
+                   sqrt(pow(solarVoltageValue, 2))};
+  // or     float RMS [6] = { sqrt(pow(accSample.x, 2) + pow(accSample.y, 2) + pow(accSample.z, 2)), //compute together or separately?
+  // sqrt(pow(magSample.magnetic.x, 2) + pow(magSample.magnetic.y, 2) + pow(magSample.magnetic.z, 2)),
+  // sqrt(pow(thermoSample.object, 2) + pow(thermoSample.ambient, 2)),
+  // pow(tempSample, 2),
+  // pow(capSample, 2),
+  // pow(solarVoltageValue, 2) };
 
-//Prediction of values
-    //thermometer (temp sensor)
-    float thermometer_pred= thermometer_init;
-    float p_pred_thermometer= p_thermometer + q_thermometer;
-    //thermopile
-    float thermopile_pred= thermopile_init;
-    float p_pred_thermopile= p_thermopile + q_thermopile;
-    //accelerometer
-    float accelerometer_pred= accelerometer_init;
-    float p_pred_accelerometer= p_accelerometer + q_accelerometer;
-    //magnetometer
-    float magnetometer_pred= magnetometer_init;
-    float p_pred_magnetometer= p_magnetometer + q_magnetometer;
-    //cap sensor
-    float capacitive_pred = capacitive_init;
-    float p_pred_capacitive= p_capacitive + q_capacitive;
-    //solar panel
-    float solarpanel_pred= solarpanel_init;
-    float p_pred_solarpanel= p_solarpanel + q_solarpanel;
- 
-//Updation of values based on predictions
-    //temp sensor
-    k_thermometer= p_pred_thermometer / (p_pred_thermometer + r_thermometer);
-    thermometer_init= thermometer_pred + k_thermometer * (thermopile_real_value-thermometer_pred);
-    p_final_thermometer= (1- k_thermometer)* p_pred_thermometer; 
+  // Simple Kalman Filter
 
+  for (int i = 0; i < 11; i++)
+  {
+    KalmanG[i] = EU[i] / (EU[i] + MU[i]);
+    currentEstimate[i] = lastEstimate[i] + KalmanG[i] * (RMS[i] - lastEstimate[i]);
+    EU[i] = (1.0f - KalmanG[i]) * EU[i] + fabsf(lastEstimate[i] - currentEstimate[i]) * proVar[i];
+    lastEstimate[i] = currentEstimate[i];
+  }
+  // create global array for current estimate values (instead of return currentEstimate function)
+  for (int i = 0; i < 11; i++)
+  {
+    finalcurrentEst[i] = currentEstimate[i];
+  }
 
+  Serial.println("Filtered values: ");
+
+  for (int i = 0; i < 11; i++)
+  {
+    Serial.print(finalcurrentEst[i]);
+    Serial.print(" ");
+  }
 }
