@@ -71,7 +71,7 @@ void loop()
     capSample = capacitive.getRawData();
     solarVoltageValue = analogRead(A1) / 1024.0 * 100.0;
 
-    float Samples[11] = { thermoSample.object,
+    float Samples[11] = { thermoSample.object, //add multiple dimensions
                           thermoSample.ambient,
                           tempSample,
                           accSample.x,
@@ -81,9 +81,9 @@ void loop()
                           magSample.magnetic.y,
                           magSample.magnetic.z,
                           capSample,
-                          solarVoltageValue }; // Multiple dimensions?
+                          solarVoltageValue }; 
 
-    float RMS [11] = {sqrt(pow(accSample.x, 2)),
+    float RMS [11] = {sqrt(pow(accSample.x, 2)), //add multiple xs and divide by n
                       sqrt(pow(accSample.y, 2)),
                       sqrt(pow(accSample.z, 2)), 
                       sqrt(pow(magSample.magnetic.x, 2)),
@@ -94,12 +94,6 @@ void loop()
                       sqrt(pow(tempSample, 2)),
                       sqrt(pow(capSample, 2)),
                       sqrt(pow(solarVoltageValue, 2)) };
-    //or     float RMS [6] = { sqrt(pow(accSample.x, 2) + pow(accSample.y, 2) + pow(accSample.z, 2)), //compute together or separately?
-                      //sqrt(pow(magSample.magnetic.x, 2) + pow(magSample.magnetic.y, 2) + pow(magSample.magnetic.z, 2)),
-                      //sqrt(pow(thermoSample.object, 2) + pow(thermoSample.ambient, 2)),
-                      //pow(tempSample, 2),
-                      //pow(capSample, 2),
-                      //pow(solarVoltageValue, 2) };
 
     
   
@@ -116,6 +110,7 @@ void loop()
         for (int i = 0; i < 11; i++) {
         finalcurrentEst[i] = currentEstimate[i];
     }
+
 
     Serial.println("Filtered values: ");
 
