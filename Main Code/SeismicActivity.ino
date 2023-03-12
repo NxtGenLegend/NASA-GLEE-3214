@@ -72,7 +72,7 @@ void loop()
     z_mag_filtered = alpha_mag * mz + (1 - alpha_mag) * z_mag_filtered;
 
     // Calculate RMS acceleration
-    float rms_acc = sqrt(pow(x_acc_filtered, 2) + pow(y_acc_filtered, 2) + pow(z_acc_filtered, 2));
+    float rms_acc = sqrt((pow(x_acc_filtered, 2) + pow(y_acc_filtered, 2) + pow(z_acc_filtered, 2)) / 3);
 
     // Check for seismic activity
     if (rms_acc > threshold_acc && abs(x_mag_filtered) > threshold_mag && abs(y_mag_filtered) > threshold_mag && abs(z_mag_filtered) > threshold_mag)
