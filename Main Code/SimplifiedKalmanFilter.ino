@@ -17,7 +17,7 @@ MLX90395 magnetometer(3);
 TPIS1385 thermopile(4);
 CAP capacitive(5);
 
-TPsample_t thermoSample; // 2
+TPsample_t thermoSample; //2
 float tempSample;
 sensor_float_vec_t accSample; //3
 mlx_sample_t magSample; //3
@@ -97,6 +97,8 @@ void loop()
       EU[i] = (1.0f - KalmanG[i]) * EU[i] + fabsf(lastEstimate[i] - currentEstimate[i]) * proVar[i];
       lastEstimate[i] = currentEstimate[i];
     }
+
+    // currentEstimate is new values
 
     // calculate the estimated value with Kalman Filter
     // float thermopile_estimated_value = ThermoKf.updateEstimate (thermSample); // Datatype Conversion Required
