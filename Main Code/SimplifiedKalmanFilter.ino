@@ -85,25 +85,9 @@ void loop()
                           magSample.magnetic.y,
                           magSample.magnetic.z,
                           capSample,
-<<<<<<< Updated upstream
-                          solarVoltageValue }; 
-
-    float RMS [11] = {sqrt(pow(accSample.x, 2)), //add multiple xs and divide by n
-                      sqrt(pow(accSample.y, 2)),
-                      sqrt(pow(accSample.z, 2)), 
-                      sqrt(pow(magSample.magnetic.x, 2)),
-                      sqrt(pow(magSample.magnetic.y, 2)),
-                      sqrt(pow(magSample.magnetic.z, 2)),
-                      sqrt(pow(thermoSample.object, 2)),
-                      sqrt(pow(thermoSample.ambient, 2)),
-                      sqrt(pow(tempSample, 2)),
-                      sqrt(pow(capSample, 2)),
-                      sqrt(pow(solarVoltageValue, 2)) };
-=======
                           solarVoltageValue }; // Multiple dimensions required
 
     // FOR LOOP to make Samples -> RMS
->>>>>>> Stashed changes
 
     // Simplified Kalman Filter
     for (int i = 0; i < 11; i++)
@@ -114,10 +98,6 @@ void loop()
       lastEstimate[i] = currentEstimate[i];
     }
 
-<<<<<<< Updated upstream
-
-    Serial.println("Filtered values: ");
-=======
     // calculate the estimated value with Kalman Filter
     // float thermopile_estimated_value = ThermoKf.updateEstimate (thermSample); // Datatype Conversion Required
     //float tempsensor_estimated_value = TempKf.updateEstimate(tempSample);
@@ -126,7 +106,6 @@ void loop()
     //float capsensor_estimated_value = CapKf.updateEstimate(capSample);
     //float solarpanel_estimated_value = SolarKf.updateEstimate(solarVoltageValue);
 }
->>>>>>> Stashed changes
 
 /*Algorithm For Implementation: (_err_estimate, = _err_measure, _q)
 float SimpleKalmanFilter::updateEstimate(float mea)
