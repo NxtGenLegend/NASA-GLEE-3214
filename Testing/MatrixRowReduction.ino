@@ -5,6 +5,9 @@
 
 //further considerations: zero error due to pivot value =0, partial pivoting recheck
  
+// Need to convert back from row echelon form and make sure that each row that is removed has all zeros as elements, 
+// and remaining rows that have some elements as zeros maintain their original elements in place of the zeroes
+
 //rows=readings, columns=no of sensors
 const int ROWS= 6;
 const int COL=11;
