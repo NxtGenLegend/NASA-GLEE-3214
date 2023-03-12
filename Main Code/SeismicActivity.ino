@@ -42,7 +42,7 @@ void setup()
     magnetometer.setOSR(MLX90395_OSR_4);       // not default. default is MLX90395_OSR_1 and is equivalent to 0
     magnetometer.setFilter(MLX90395_FILTER_8); // default. MLX90395_FILTER_1 is equivalent to 0
 
-    // Set threshold_acc and threshold_mag to mean plus three standard deviations
+    // Set threshold_acc and threshold_mag to mean plus three standard deviations (edits)
     threshold_acc = alpha_acc * ax;
     threshold_mag = alpha_mag * mx;
 }
@@ -85,6 +85,7 @@ void loop()
     }
 }
 
+// Threshold must be triple axes, not single for magnetometer
 // Useful values = RMS Acceleration (Lunar Surface Roughness) and Seismic Activity (Bool)
 // Need to tune for movement (RMS Magnetometer Values)
 
