@@ -75,7 +75,7 @@ void loop()
     capSample = capacitive.getRawData();
     solarVoltageValue = analogRead(A1) / 1024.0 * 100.0;
 
-    float Samples[11] = { thermoSample.object, //add multiple dimensions
+    float Samples[11] = { thermoSample.object, 
                           thermoSample.ambient,
                           tempSample,
                           accSample.x,
@@ -85,9 +85,8 @@ void loop()
                           magSample.magnetic.y,
                           magSample.magnetic.z,
                           capSample,
-                          solarVoltageValue }; // Multiple dimensions required
+                          solarVoltageValue }; 
 
-    // FOR LOOP to make Samples -> RMS
 
     // Simplified Kalman Filter
     for (int i = 0; i < 11; i++)
