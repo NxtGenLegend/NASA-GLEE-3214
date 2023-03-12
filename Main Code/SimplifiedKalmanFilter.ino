@@ -7,7 +7,6 @@
 #include "TPIS1385.h"
 #include <Wire.h>
 
-// SimpleKalmanFilter Constructor Modification, Sensor Constructor Addition
 // Measurement Uncertainty = Estimated Uncertainty & Process Variance Addition,
 // Subsequent Calibration & Testing
 
@@ -32,13 +31,10 @@ float MU[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 float lastEstimate[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 float currentEstimate[11];
 float proVar[11] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+float rms [6];
+float finalcurrentEst[11];
 
-// SimpleKalmanFilter ThermoKf(1, 1, 1); // tune
-// SimpleKalmanFilter TempKf(1, 1, 1);   // tune
-// SimpleKalmanFilter AccKf(1, 1, 1);    // tune
-// SimpleKalmanFilter MagKf(1, 1, 1);    // tune
-// SimpleKalmanFilter CapKf(1, 1, 1);    // tune
-// SimpleKalmanFilter SolarKf(1, 1, 1);  // tune
+
 
 void setup()
 {
@@ -87,32 +83,45 @@ void loop()
                           capSample,
                           solarVoltageValue }; // Multiple dimensions?
 
-    // Simplified Kalman Filter
+    float RMS [11] = {sqrt(pow(accSample.x, 2)),
+                      sqrt(pow(accSample.y, 2)),
+                      sqrt(pow(accSample.z, 2)), 
+                      sqrt(pow(magSample.magnetic.x, 2)),
+                      sqrt(pow(magSample.magnetic.y, 2)),
+                      sqrt(pow(magSample.magnetic.z, 2)),
+                      sqrt(pow(thermoSample.object, 2)),
+                      sqrt(pow(thermoSample.ambient, 2)),
+                      sqrt(pow(tempSample, 2)),
+                      sqrt(pow(capSample, 2)),
+                      sqrt(pow(solarVoltageValue, 2)) };
+    //or     float RMS [6] = { sqrt(pow(accSample.x, 2) + pow(accSample.y, 2) + pow(accSample.z, 2)), //compute together or separately?
+                      //sqrt(pow(magSample.magnetic.x, 2) + pow(magSample.magnetic.y, 2) + pow(magSample.magnetic.z, 2)),
+                      //sqrt(pow(thermoSample.object, 2) + pow(thermoSample.ambient, 2)),
+                      //pow(tempSample, 2),
+                      //pow(capSample, 2),
+                      //pow(solarVoltageValue, 2) };
+
+    
+  
+    // Simple Kalman Filter 
+    
     for (int i = 0; i < 11; i++)
     {
-      KalmanG[i] = EU[i] / (EU[i]  + MU[i]);
-      currentEstimate[i] = lastEstimate[i] + KalmanG[i] * (Samples[i] - lastEstimate[i]);
-      EU[i] = (1.0f - KalmanG[i]) * EU[i] + fabsf(lastEstimate[i] - currentEstimate[i]) * proVar[i];
-      lastEstimate[i] = currentEstimate[i];
+       KalmanG[i] = EU[i] / (EU[i] + MU[i]);
+        currentEstimate[i] = lastEstimate[i] + KalmanG[i] * (RMS[i] - lastEstimate[i]);
+        EU[i] = (1.0f - KalmanG[i]) * EU[i] + fabsf(lastEstimate[i] - currentEstimate[i]) * proVar[i];
+        lastEstimate[i] = currentEstimate[i];
+    }
+    //create global array for current estimate values (instead of return currentEstimate function)
+        for (int i = 0; i < 11; i++) {
+        finalcurrentEst[i] = currentEstimate[i];
     }
 
-    // calculate the estimated value with Kalman Filter
-    // float thermopile_estimated_value = ThermoKf.updateEstimate (thermSample); // Datatype Conversion Required
-    //float tempsensor_estimated_value = TempKf.updateEstimate(tempSample);
-    // float accelerometer_estimated_value = AccKf.updateEstimate(accSample); // Datatype Conversion Required
-    // float magnetometer_estimated_value = MagKf.updateEstimate(magSample);  // Datatype Conversion Required
-    //float capsensor_estimated_value = CapKf.updateEstimate(capSample);
-    //float solarpanel_estimated_value = SolarKf.updateEstimate(solarVoltageValue);
-}
+    Serial.println("Filtered values: ");
 
-/*Algorithm For Implementation: (_err_estimate, = _err_measure, _q)
-float SimpleKalmanFilter::updateEstimate(float mea)
-{
-  _kalman_gain = _err_estimate/(_err_estimate + _err_measure);
-  _current_estimate = _last_estimate + _kalman_gain * (mea - _last_estimate);
-  _err_estimate =  (1.0f - _kalman_gain)*_err_estimate + fabsf(_last_estimate-_current_estimate)*_q;
-  _last_estimate=_current_estimate;
-
-  return _current_estimate;
+    for (int i = 0; i < 11; i++) {
+        Serial.print(finalcurrentEst[i]);
+        Serial.print(" ");
+    }
+    
 }
-*/
