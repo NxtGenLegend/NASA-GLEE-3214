@@ -98,7 +98,7 @@ void loop()
       lastEstimate[i] = currentEstimate[i];
     }
 
-    // currentEstimate is new values
+    // currentEstimate has new values
 
     // calculate the estimated value with Kalman Filter
     // float thermopile_estimated_value = ThermoKf.updateEstimate (thermSample); // Datatype Conversion Required
