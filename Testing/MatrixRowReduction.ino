@@ -2,10 +2,7 @@
  
 //for reference: i: index variable for rows, j index variable for columns, k index variable for selecting pivot row,
 // l is index variable for eliminating non-zero entries below the pivot
-
-//further considerations: zero error due to pivot value =0, partial pivoting recheck
  
-// Need to convert back from row echelon form and make sure that each row that is removed has all zeros as elements, 
 // and remaining rows that have some elements as zeros maintain their original elements in place of the zeroes
 
 //rows=readings, columns=no of sensors
@@ -61,9 +58,20 @@ for (int l = 0; l < ROWS; l++) {
   for (int j= 0; j < ROWS; j++)
   outliersmatrix[l][j] -= factor * outliersmatrix[i][j];
 }
+
+//eliminating zero rows
+int nonzero_rows=ROWS; {
+for (int i=0; i < ROWS; i++) {
+  if (finalreadings [i][0]==0)
+  nonzero_rows--;
+  for (int j=0; j < ROWS; j++) {
+    finalreadings[i][j]=finalreadings[i+1][j];
+}
+}
+}
  
 // print finalreadings matrix
-  for (int i = 0; i < ROWS; i++) {
+  for (int i = 0; i < nonzero_rows; i++) {
     for (int j = 0; j < COL; j++) {
       Serial.print(finalreadings[i][j]);
       Serial.print(" ");
@@ -71,9 +79,8 @@ for (int l = 0; l < ROWS; l++) {
     Serial.println();
   }
  
- 
   // print outliersmatrix matrix
-  for (int i = 0; i < ROWS; i++) {
+  for (int i = 0; i < nonzero_rows; i++) {
     for (int j = 0; j < COL; j++) {
       Serial.print(outliersmatrix[i][j]);
       Serial.print(" ");
@@ -81,4 +88,5 @@ for (int l = 0; l < ROWS; l++) {
     Serial.println();
   }
 } 
+
 
