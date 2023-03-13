@@ -5,6 +5,9 @@
  
 // and remaining rows that have some elements as zeros maintain their original elements in place of the zeroes
 
+// Naiessha Suggestions
+// Extra serialprintln, outliermatrix should [i][j] indexed, elimination of zeros needs to be looped for all columns, need to handle pivot = 0 case
+
 //rows=readings, columns=no of sensors
 const int ROWS= 6;
 const int COL=11;
