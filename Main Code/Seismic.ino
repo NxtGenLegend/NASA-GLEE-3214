@@ -14,14 +14,34 @@ float alpha_mag = 0.5;
 float x_acc_filtered = 0.0, y_acc_filtered = 0.0, z_acc_filtered = 0.0;
 float x_mag_filtered = 0.0, y_mag_filtered = 0.0, z_mag_filtered = 0.0;
 
-// Set initial values for threshold
+// Set initial values for thresholds
 float threshold_acc = 0.0;
-float threshold_mag = 0.0;
+float mean_ax = 0.0;
+float mean_ay = 0.0;
+float mean_az = 0.0;
+float std_ax = 0.0;
+float std_ay = 0.0;
+float std_az = 0.0;
+
+float mean_mx = 0.0;
+float mean_my = 0.0;
+float mean_mz = 0.0;
+float std_mx = 0.0;
+float std_my = 0.0;
+float std_mz = 0.0;
+
+float threshold_ax = 0.0;
+float threshold_ay = 0.0;
+float threshold_az = 0.0;
+
+float threshold_mx = 0.0;
+float threshold_my = 0.0;
+float threshold_mz = 0.0;
 
 // Set initial flag for seismic activity
 bool seismic_activity = false;
 
-// Initializing variables
+// Initializing variables for Accelerometer & Magnetometer samples
 sensor_float_vec_t accSample; // 3
 mlx_sample_t magSample;       // 3
 
@@ -42,9 +62,6 @@ void setup()
     magnetometer.setOSR(MLX90395_OSR_4);       // not default. default is MLX90395_OSR_1 and is equivalent to 0
     magnetometer.setFilter(MLX90395_FILTER_8); // default. MLX90395_FILTER_1 is equivalent to 0
 
-    // Set threshold_acc and threshold_mag to mean plus three standard deviations (edits)
-    threshold_acc = alpha_acc * ax;
-    threshold_mag = alpha_mag * mx;
 }
 
 void loop()
@@ -65,17 +82,46 @@ void loop()
     y_acc_filtered = alpha_acc * ay + (1 - alpha_acc) * y_acc_filtered;
     z_acc_filtered = alpha_acc * az + (1 - alpha_acc) * z_acc_filtered;
 
+    // Calculate mean and standard deviation for each axis
+    mean_ax = alpha_acc * ax + (1 - alpha_acc) * mean_ax;
+    mean_ay = alpha_acc * ay + (1 - alpha_acc) * mean_ay;
+    mean_az = alpha_acc * az + (1 - alpha_acc) * mean_az;
+
+    std_ax = sqrt((alpha_acc * (ax - mean_ax) * (ax - mean_ax)) + ((1 - alpha_acc) * std_ax * std_ax));
+    std_ay = sqrt((alpha_acc * (ay - mean_ay) * (ay - mean_ay)) + ((1 - alpha_acc) * std_ay * std_ay));
+    std_az = sqrt((alpha_acc * (az - mean_az) * (az - mean_az)) + ((1 - alpha_acc) * std_az * std_az));
+
+    // Update threshold for each axis dynamically
+    float threshold_ax = mean_ax + 3 * std_ax;
+    float threshold_ay = mean_ay + 3 * std_ay;
+    float threshold_az = mean_az + 3 * std_az;
+
     // Calculate exponential moving average with dynamically adjusted smoothing factor for magnetometer readings
     alpha_mag = abs((mx + my + mz) - (x_mag_filtered + y_mag_filtered + z_mag_filtered)) / (mx + my + mz);
     x_mag_filtered = alpha_mag * mx + (1 - alpha_mag) * x_mag_filtered;
     y_mag_filtered = alpha_mag * my + (1 - alpha_mag) * y_mag_filtered;
     z_mag_filtered = alpha_mag * mz + (1 - alpha_mag) * z_mag_filtered;
 
+    // Calculate mean and standard deviation for each axis
+    mean_mx = alpha_mag * mx + (1 - alpha_mag) * mean_mx;
+    mean_my = alpha_mag * my + (1 - alpha_mag) * mean_my;
+    mean_mz = alpha_mag * mz + (1 - alpha_mag) * mean_mz;
+
+    std_mx = sqrt((alpha_mag * (mx - mean_mx) * (mx - mean_mx)) + ((1 - alpha_mag) * std_mx * std_mx));
+    std_my = sqrt((alpha_mag * (my - mean_my) * (my - mean_my)) + ((1 - alpha_mag) * std_my * std_my));
+    std_mz = sqrt((alpha_mag * (mz - mean_mz) * (mz - mean_mz)) + ((1 - alpha_mag) * std_mz * std_mz));
+
+    // Update threshold for each axis dynamically
+    threshold_mx = mean_mx + 3 * std_mx;
+    threshold_my = mean_my + 3 * std_my;
+    threshold_mz = mean_mz + 3 * std_mz;
+
     // Calculate RMS acceleration
     float rms_acc = sqrt((pow(x_acc_filtered, 2) + pow(y_acc_filtered, 2) + pow(z_acc_filtered, 2)) / 3);
+    threshold_acc = sqrt((pow(threshold_ax, 2) + pow(threshold_ay, 2) + pow(threshold_az, 2)) / 3);
 
     // Check for seismic activity
-    if (rms_acc > threshold_acc && abs(x_mag_filtered) > threshold_mag && abs(y_mag_filtered) > threshold_mag && abs(z_mag_filtered) > threshold_mag)
+    if (rms_acc > threshold_acc && abs(x_mag_filtered) > threshold_mx && abs(y_mag_filtered) > threshold_my && abs(z_mag_filtered) > threshold_mz)
     {
         seismic_activity = true;
     }
