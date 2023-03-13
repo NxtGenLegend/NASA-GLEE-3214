@@ -5,6 +5,9 @@
 
 // Instantiate TMP117 class with id of one and debugging set to false
 
+// Symmetric mean change - Adhish Algorithm
+// Multimean change in one packet + get indices of outliers that are persistent - Arnav Algorithm
+
 float data[256];
 float dir = 0;
 float tolerance = 7; //HYPERPARAM
