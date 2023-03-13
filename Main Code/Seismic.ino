@@ -4,6 +4,8 @@
 MPU6000 accelerometer(2);
 MLX90395 magnetometer(3);
 
+// CONVERT TO ARRAYS FOR GENERALIZATION
+
 // Set initial values for acceleration and magnetometer readings
 float ax = 0.0, ay = 0.0, az = 0.0;
 float mx = 0.0, my = 0.0, mz = 0.0;
