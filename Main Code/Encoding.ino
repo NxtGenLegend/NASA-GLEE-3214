@@ -1,6 +1,7 @@
 #include <math.h>
 
 // Make separate implementation without math.h and with the mathematical operators as part of the encoding 
+// Adding math operators & removing math.h
 
 String key = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`~!@#$%&_|?";
 const int data_length = 256;
