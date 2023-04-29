@@ -3,8 +3,6 @@
 //for reference: i: index variable for rows, j index variable for columns, k index variable for selecting pivot row,
 // l is index variable for eliminating non-zero entries below the pivot
  
-// Naiessha Suggestions
-// elimination of zeros needs to be looped for all columns, need to handle pivot = 0 case
 // and remaining rows that have some elements as zeros maintain their original elements in place of the zeroes
 
 //rows=readings, columns=no of sensors
@@ -44,6 +42,10 @@ int l;
 // row reduction step 1 : determine pivot and divide rows
 for (int i = 0, k = 0; i < ROWS && k < ROWS; i++, k++) {
     float pivot[2] = {finalreadings[i][i], outliersmatrix[i][i]}; //first diagonal element in row is pivot
+    if (pivot==0)
+    for (j = i + 1; j < ROWS; j++) {
+      if (finalreadings[j][i] != 0)
+      pivot=finalreadings[i][j];
     for (int j = i; j < COL; j++) {
         finalreadings[i][j] /= pivot[0];
     }
@@ -58,7 +60,7 @@ for (int l = 0; l < ROWS; l++) {
     finalreadings[l][j] -= factor * finalreadings[i][j];
   }
   for (int j= 0; j < ROWS; j++)
-  outliersmatrix[i][j] -= factor * outliersmatrix[i][j]; //changed l j to i j
+  outliersmatrix[l][j] -= factor * outliersmatrix[i][j];
 }
 
 //eliminating zero rows
@@ -78,6 +80,7 @@ for (int i=0; i < ROWS; i++) {
       Serial.print(finalreadings[i][j]);
       Serial.print(" ");
     }
+    Serial.println();
   }
  
   // print outliersmatrix matrix
@@ -86,7 +89,9 @@ for (int i=0; i < ROWS; i++) {
       Serial.print(outliersmatrix[i][j]);
       Serial.print(" ");
     }
+    Serial.println();
   }
 } 
+}
 
 
