@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "kalmanfilter": "cpp",
-        "cmath": "cpp",
-        "complex": "cpp"
-    },
-    "C_Cpp.errorSquiggles": "enabled"
-}
